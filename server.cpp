@@ -1,3 +1,9 @@
+/*
+    KLEYTON LEITE
+
+    IMPLEMENTAÇÃO DO HEADER SERVER.H
+ */
+
 #include "server.h"
 
 using namespace connection;
