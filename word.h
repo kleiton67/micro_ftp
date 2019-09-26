@@ -7,6 +7,9 @@
 #ifndef WORD_H_
 #define  WORD_H_
 #include <string>
+
+#define TAM_DATA 1389
+
 namespace connection
 {
     class Word{
@@ -18,8 +21,18 @@ namespace connection
             void setVersion(std::string version);
             void setCommand(std::string cmd);
             std::string makeWord(std::string msg, std::string control);
+            //Faz palavra
             std::string makeWord(std::string cmd, std::string control, std::string msg);
+            //Verifica se há mensagens a serem a entregues
             bool nextMessage(std::string msg);
+            //Obtem comando da palavra
+            std::string getCommand(std::string msg);
+            //Obtem somente mensagem
+            std::string getData(std::string msg);
+            //Obtem tamanho da mensagem
+            int getTamanho(std::string msg);
+            //Prepara tamanho da palavra
+            std::string setTamanho(int tam);
         public:
             Word();
             ~Word();

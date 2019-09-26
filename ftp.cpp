@@ -27,32 +27,57 @@ Ftp::~Ftp()
 {
 }
 
+void Ftp::comandos()
+{
+    while (true)
+    {
+        std::string msg;
+        msg = receiveData();
+        std::string aux;
+        aux = getCommand(msg);
+        std::transform(aux.begin(), aux.end(), aux.begin(), ::toupper);
+        if(aux.compare(LS))
+        {
+            if(getTamanho(msg) > 0)
+                ls();
+            else
+            {
+                std::string caminho;
+                caminho = getData(msg);
+                ls(caminho);
+            }
+            
+        }
+        else if(aux.compare(CD))
+        {
+
+        }
+        else if(aux.compare(GET))
+        {
+
+        }
+        else if(aux.compare(PUT))
+        {
+            
+        }
+        else if(aux.compare(MKDIR))
+        {
+            
+        }
+        else if(aux.compare(CLOSE))
+        {
+            
+        }
+    }
+}
+
 std::string Ftp::receiveData()
 {
     char data[1400];
     std::string msg;
+    msg.append(data);
     read(socket, data, sizeof(data));
     msg.insert(0, data);
-    //Analisar tamanho do pacote
-    int tamanho = 0;
-    tamanho = msg[1]*1000+msg[2]*100+msg[3]*10+msg[4];
-
-    while(tamanho == 1400)
-    {
-        msg.append(data);
-        read(socket, data, sizeof(data));
-        msg.insert(0, data);
-        tamanho = msg[1]*1000+msg[2]*100+msg[3]*10+msg[4];
-    }
-
-    if(nextMessage(data))
-    {
-        std::string aux;
-        read(socket, data, sizeof(data));
-        aux.insert(0, data, tamanho);
-        tamanho = aux[1]*1000+aux[2]*100+aux[3]*10+aux[4];
-        msg.insert(msg.begin(), aux.begin(), aux.end());
-    }
 
     return msg;
 
@@ -90,9 +115,9 @@ bool Ftp::sentData(std::string cmd, std::string msg)
             {
                 memset(data, ' ',sizeof(data));
                 //Envio da primeira parte primeiro
-                if(aux.size()>1388){
-                    temp.insert(0, aux,0, 1388);
-                    aux.erase(0,1388);
+                if(aux.size()>TAM_DATA){
+                    temp.insert(0, aux,0, TAM_DATA);
+                    aux.erase(0,TAM_DATA);
                     send = makeWord(cmd, "NW", temp);
                     strncpy(data, send.c_str(), sizeof(data));
 
@@ -116,11 +141,6 @@ bool Ftp::sentData(std::string cmd, std::string msg)
     
     return true;
 
-}
-
-void Ftp::comandos()
-{
-    
 }
 
 bool Ftp::ls(std::string caminho = ".")

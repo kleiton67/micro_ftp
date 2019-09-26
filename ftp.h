@@ -19,6 +19,13 @@
 #include <unistd.h>
 #include <cstring>
 
+#define LS    "LS   "
+#define CD    "CD   "
+#define GET   "GET  "
+#define PUT   "PUT  "
+#define MKDIR "MKDIR"
+#define CLOSE "CLOSE"
+
 namespace connection
 {
     class Ftp : public Word{
@@ -27,9 +34,9 @@ namespace connection
             int socket;
             //Verifica se o diretorio é valido
             bool dirValid(std::string caminho);
-            //Recebe mesagem
+            //Recebe uma mesagem completa
             std::string receiveData();
-            //Envia mensagem
+            //Envia mensagem completa
             bool sentData(std::string cmd, std::string msg);
             //Abre arquivo e inicia envio
             //bool sentDataFile();
