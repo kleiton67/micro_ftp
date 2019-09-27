@@ -30,7 +30,7 @@ namespace connection
 {
     class Ftp : public Word{
 
-        private:
+        protected:
             int socket;
             //Verifica se o diretorio é valido
             bool dirValid(std::string caminho);
@@ -39,9 +39,12 @@ namespace connection
             //Envia mensagem completa
             bool sentData(std::string cmd, std::string msg);
             //Abre arquivo e inicia envio
+
+            //Envia mensagem por parte
+
             //bool sentDataFile();
         public:
-
+            Ftp(){}
             Ftp(int socket);
             ~Ftp();
 
@@ -57,6 +60,8 @@ namespace connection
             bool get(std::string file);
             //Recebe arquivo solicitado
             bool put();
+            //Imprime dados recebidos
+            void printReceive();
 
     };
 }

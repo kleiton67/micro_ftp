@@ -72,7 +72,7 @@ std::string Word::getData(std::string msg)
 
 int Word::getTamanho(std::string msg)
 {
-
+    return msg[6]*1000+msg[7]*100+msg[8]*10+msg[9];
 }
 
 std::string Word::setTamanho(int tam)

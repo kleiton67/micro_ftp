@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
     ipOfServer.sin_family = AF_INET;
     ipOfServer.sin_port = htons(2018);
     ipOfServer.sin_addr.s_addr = inet_addr(address.c_str());
-    if(connect(CreateSocket, (struct sockaddr *)&ipOfServer, sizeof(ipOfServer))<0)
+    if(connect(CreateSocket, (struct sockaddr *)&ipOfServer,
+                             sizeof(ipOfServer))<0)
     {
         printf("Connection failed due to port and ip problems\n");
         return 1;
@@ -66,7 +67,8 @@ int main(int argc, char *argv[])
 
     write(CreateSocket, send, sizeof(send));
 
-    while((n = read(CreateSocket, dataReceived, sizeof(dataReceived)-1)) > 0)
+    while((n = read(CreateSocket, dataReceived, 
+                        sizeof(dataReceived)-1)) > 0)
     {
         dataReceived[n] = 0;
         //fputs(dataReceived, stdout);

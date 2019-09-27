@@ -148,7 +148,8 @@ bool Ftp::ls(std::string caminho = ".")
     std::vector<std::string > v;
     DIR* dirp = opendir(caminho.c_str());
     if (dirp == NULL) {
-            printf ("Cannot open directory '%s'\n", v[1]);
+            printf ("Error LS: Cannot open directory '%s'\n", v[1]);
+            sentData(LS, "LS:Error");
             return false;
         }
     struct dirent * dp;
