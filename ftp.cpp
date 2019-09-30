@@ -57,8 +57,11 @@ void Ftp::comandos()
 						 &IsUnexpectedCharacters), aux.end());
         if(aux.compare("LS")==0)
         {
+			/*
+				Cria arquivo e envia ao cliente
+			*/
 			std::cout << "Comando LS\n";
-            if(getTamanho(msg) > 0)
+            if(getTamanho(msg) < 13)
                 ls(".");
             else
             {
@@ -70,11 +73,13 @@ void Ftp::comandos()
         }
         else if(aux.compare("CD") == 0)
         {
-
+			std::string dados;
+			dados = getData(msg);
+			cd(msg);
         }
         else if(aux.compare("GET") == 0)
         {
-
+			
         }
         else if(aux.compare("PUT") == 0)
         {
@@ -98,10 +103,17 @@ void Ftp::comandos()
     }
 }
 
+std::string Ftp::receiveAllMsg()
+{
+	char data
+}
+
 std::string Ftp::receiveMsg()
 {
     /*
         Receber apenas dados
+		Precisa implementar a obtenção de dados de varias 
+			mensagens
     */
    char data[TAM_DATA];
    std::string msg;

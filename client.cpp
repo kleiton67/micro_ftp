@@ -108,15 +108,31 @@ bool Client::comandoRequerido(std::string mensagem)
 			std::cout << getData(msg_receive);
 		}
     }
-	else if(out[0] == "quit" || out[0] == "close")
+	else if(out[0] == "close")
 	{
 		std::cout << "Encerrando conexao com server!!!\n";
 		sentCompleteData(CLOSE, "...");
 		return false;
+	}
+	else if(out[0] == "cd")
+	{
+		if(out.size() >= 2){
+			sentCompleteData(CD, out[1]);
+		}
+		else
+		{
+			msgIncomplete();
+		}
+		
 	}
     else
     {
         std::cout << "Comando desconhecido!!!\n";
     }
 	return true;
+}
+
+void msgIncomplete()
+{
+	std::cout << "Comando Incompleto!!!\n"; 
 }

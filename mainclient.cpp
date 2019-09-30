@@ -32,7 +32,7 @@ int main()
 					continue;
 				}
 		}
-		else if(commands.size() > 0 && commands[0] == "exit")
+		else if(commands.size() > 0 && commands[0] == "quit")
 		{
 			std::cout << "Deixando conexao\n";
 			break;

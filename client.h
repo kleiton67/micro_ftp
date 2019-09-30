@@ -38,6 +38,8 @@ namespace connection{
                 ao servidor
             */
             bool comandoRequerido(std::string mensagem);
+            //Mostra a mensagem de comando incompleto
+            void msgIncomplete();
     };
 
 }
