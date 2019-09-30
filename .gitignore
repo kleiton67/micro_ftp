@@ -31,3 +31,8 @@
 *.out
 *.app
 *.run
+
+# Directories of tests
+
+/teste
+

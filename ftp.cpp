@@ -73,9 +73,10 @@ void Ftp::comandos()
         }
         else if(aux.compare("CD") == 0)
         {
+			std::cout << "Comando CD\n";
 			std::string dados;
 			dados = getData(msg);
-			cd(msg);
+			cd(dados);
         }
         else if(aux.compare("GET") == 0)
         {
@@ -87,7 +88,8 @@ void Ftp::comandos()
         }
         else if(aux.compare("MKDIR") == 0)
         {
-            
+			std::cout << "Comando MKDIR\n";
+			mkdir(getData(msg));
         }
         else if(aux.compare("CLOSE") == 0)
         {
@@ -105,7 +107,80 @@ void Ftp::comandos()
 
 std::string Ftp::receiveAllMsg()
 {
-	char data
+	char data[TAM_DATA];
+	std::string msg;
+	std::string r_msg;
+
+	msg = receiveMsg();
+	while(nextMessage(msg))
+	{
+		msg.clear();
+		msg = receiveMsg();
+	}
+	r_msg.append(getData(msg));
+
+	return r_msg;
+}
+
+bool Ftp::receiveMsgRecordFile(std::string caminho){
+	//Faz manipulações internas em arquivos binarios
+	std::fstream file(caminho, std::ios::binary|std::ios::out);
+	if(file){
+		std::string msg;
+		//std::cout << "Receive: Recebendo Primeira mensagem!!!\n";
+		msg = receiveMsg();
+		//std::cout << "Receive: Entrando no Laco\n";
+		while(nextMessage(msg))
+		{
+			//Para cada mensagem recebida
+			//Extrair dados e colocar no arquivo
+			file << getData(msg);
+			msg.clear();
+			msg = receiveMsg();
+			//std::cout << "Receive: Recebendo mensagem!!!\n";
+		}
+		file << getData(msg);
+		file.close();
+		//std::cout << "Receive: Fim da recepcao do arquivo!!!\n";
+		return true;
+	}
+	else
+	{
+		std::cout << "Erro no arquivo: " << caminho << "\n";
+		return false;
+	}
+	return false;
+}
+
+bool Ftp::sentFile(std::string caminho, std::string cmd)
+{
+	std::fstream file(caminho, std::ios::binary|std::ios::in);
+	if(file){
+		char c;
+		int sent = 0;
+		std::string msg;
+		while (file.get(c)){
+			msg.push_back(c);
+			sent+=1;
+			//Se atingir o tamanho maximo
+			// da mensagem enviar o arquivo
+			if(sent == 1400)
+			{
+				sentData(true, cmd, msg);
+			}
+		}
+
+		//Envia o resto que faltou
+		sentData(false, cmd, msg);
+
+		//Ultima parte do arquivo
+	}
+	else
+	{
+		std::cout << "Erro no arquivo: " << caminho << "- sentFile\n";
+		return false;
+	}
+	return false;
 }
 
 std::string Ftp::receiveMsg()
@@ -148,6 +223,8 @@ bool Ftp::sentData(bool more, std::string cmd, std::string msg)
     return true;
 }
 
+
+
 bool Ftp::sentCompleteData(std::string cmd, std::string msg)
 {
     if(msg.size() <= TAM_DATA)
@@ -174,10 +251,14 @@ bool Ftp::sentCompleteData(std::string cmd, std::string msg)
 
 bool Ftp::ls(std::string caminho = ".")
 {
+	//Nome do arquivo para armazenar funcoes do ls
+	std::string name;
+	name = ".ls-"+ std::to_string(sock);
+
     std::vector<std::string > v;
     DIR* dirp = opendir(caminho.c_str());
     if (dirp == NULL) {
-            printf ("Error LS: Cannot open directory '%s'\n", 
+            printf ("Error CD: Cannot open directory '%s'\n", 
 								caminho.c_str());
             sentCompleteData(LS, "LS:Error");
             return false;
@@ -197,20 +278,54 @@ bool Ftp::ls(std::string caminho = ".")
     ss << v[i];
     }
     std::string s = ss.str();
-    //Enviar dados
-    sentCompleteData("ls", s);
-
+    //Enviar dados ems string
+    //sentCompleteData("ls", s);
+	//Gravar dados em um arquivo
+	//E enviar para o get iniciar transferencia
+	//ao cliente
+	std::fstream file(name, std::ios::out);
+	file << s;
+	file.close();
+	sentFile(name, LS);
+	//Remover arquivo
+	rmdir(name.c_str());
     return true;
 }
 
 bool Ftp::cd(std::string name)
 {
-
+	//Navega pelos diretorios
+	DIR* dirp = opendir(name.c_str());
+    if (dirp == NULL) {
+            printf ("Error LS: Cannot open directory '%s'\n", 
+								name.c_str());
+            sentCompleteData(CD, "CD:Error");
+            return false;
+        }
+	else
+	{
+		sentCompleteData(CD, "CD:OK");
+	}
+	return true;
 }
 
 bool Ftp::mkdir(std::string name)
 {
-
+	std::string diretorio;
+	diretorio = "mkdir -p " + name; 
+	const int dir_err = system(diretorio.c_str());
+	if (-1 == dir_err)
+	{
+		printf("Error creating directory!n");
+		sentCompleteData(MKDIR, "MKDIR:Error");
+		exit(1);
+	}
+	else
+	{
+		std::cout << "Diretorio: " << name << "criado com sucesso!!!\n";
+		sentCompleteData(MKDIR, "MKDIR:OK");
+	}
+	
 }
 
 bool Ftp::get(std::string file)

@@ -15,6 +15,8 @@ namespace connection{
             std::string address;
             short int port;
             struct sockaddr_in confServer;
+            //Contem caminho da pasta atual
+            std::string local = ".";
 
         public:
             Client(){};
@@ -40,6 +42,7 @@ namespace connection{
             bool comandoRequerido(std::string mensagem);
             //Mostra a mensagem de comando incompleto
             void msgIncomplete();
+            void imprimeFile(std::string file);
     };
 
 }

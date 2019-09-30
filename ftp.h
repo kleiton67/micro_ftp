@@ -20,6 +20,9 @@
 #include <sys/socket.h>//Socket
 #include <sys/types.h>//Tipos para socket
 #include <arpa/inet.h> //addrstructure
+#include <fstream> //Manipulação de arquivos
+#include <cstdlib> //system
+ 
 
 #include "word.h"
 
@@ -46,6 +49,12 @@ namespace connection
             std::string receiveMsg();
             //Envia mensagem completa
             bool sentCompleteData(std::string cmd, std::string msg);
+            //Recebe a mensagem completa
+            std::string receiveAllMsg();
+            //Recebe e grava em um arquivo com o nome especificado
+            bool receiveMsgRecordFile(std::string caminho);
+            //Envia mensagem em binario a partir de um arquivo
+            bool sentFile(std::string caminho, std::string cmd);
         public:
             Ftp(){}
             Ftp(int socket);

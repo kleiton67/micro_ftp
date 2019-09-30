@@ -20,7 +20,6 @@ int main()
 		std::cout << "<semconexao>";
 		std::string mensagem;
 		std::getline(std::cin, mensagem);
-		
 		std::vector<std::string > commands;
 		commands = cliente.tokenize(mensagem, ' ');
 
@@ -44,6 +43,7 @@ int main()
 		}
 
 		cliente.comunicacaoServer();
+		mensagem.clear();
 		
     }
     return EXIT_SUCCESS;   

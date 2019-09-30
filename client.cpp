@@ -81,7 +81,7 @@ std::vector<std::string> Client::tokenize(std::string const &str,
 
 void Client::imprimeCabecalho()
 {
-    std::cout << '<' << address << '>' << ':';
+    std::cout << '<' << address << " : " << local << '>' << ':';
 }
 
 bool Client::comandoRequerido(std::string mensagem)
@@ -96,28 +96,47 @@ bool Client::comandoRequerido(std::string mensagem)
 	{
 		if(out.size() > 2){
 			//std::cout <<"Dados enviados ao server!!!\n";
-			sentCompleteData(LS, out[2]);
+			sentCompleteData(LS, local+"/"+out[2]);
 		}
 		else
 		{
 			//std::cout << "Envio de dados!!!\n";	
-			sentCompleteData(LS, ".");
+			sentCompleteData(LS, local);
 			std::string msg_receive;
 			//std::cout << "Recebendo dados!!!3\n";
-			msg_receive = receiveMsg();
-			std::cout << getData(msg_receive);
+			//msg_receive = receiveAllMsg();
+			//std::cout << getData(msg_receive);
+			//Grava dados tranferidos em arquivo
+			receiveMsgRecordFile(".ls");
+			//Imprime dados do arquivo
+			imprimeFile(".ls");
+
 		}
     }
 	else if(out[0] == "close")
 	{
-		std::cout << "Encerrando conexao com server!!!\n";
+		std::cout << "Encerrando conexao com server!!! - Client\n";
 		sentCompleteData(CLOSE, "...");
 		return false;
 	}
 	else if(out[0] == "cd")
 	{
 		if(out.size() >= 2){
-			sentCompleteData(CD, out[1]);
+			sentCompleteData(CD, local+out[1]);
+			std::string msg;
+			msg = receiveAllMsg();
+			if(msg.compare("CD:OK") == 0)
+			{
+				//Fazer uma pilha de diretorios
+				//toda vez que identificar o ..
+				//retirar uma string da pilha
+				local = local+"/"+out[1];
+			}
+			else
+			{
+				std::cout << "cd: Diretorio Não Encontrado!!!\n"
+			}
+			
 		}
 		else
 		{
@@ -125,14 +144,55 @@ bool Client::comandoRequerido(std::string mensagem)
 		}
 		
 	}
+	else if(out[0] == "mkdir")
+	{
+		if(out.size() >= 2)
+		{
+			sentCompleteData(MKDIR, local+"/"+out[1]);
+			std::string msg;
+			msg = receiveAllMsg();
+			if(msg.compare("MKDIR:OK") == 0)
+			{
+				std::cout << "mkdir: Diretorio criado com sucesso!!!\n";
+			}
+			else
+			{
+				std::cout<<"mkdir: Problemas ao criar o diretorio!!!\n";
+			}
+			
+		}
+	}
     else
     {
-        std::cout << "Comando desconhecido!!!\n";
+        std::cout << "Comando desconhecido - Client!!!\n";
     }
 	return true;
 }
 
-void msgIncomplete()
+void Client::msgIncomplete()
 {
-	std::cout << "Comando Incompleto!!!\n"; 
+	std::cout << "Comando Incompleto - Client!!!\n"; 
+}
+
+void Client::imprimeFile(std::string file)
+{
+	std::ifstream is (file);
+	if (is) {
+		std::cout << "Files and Directories: \n";
+		// get length of file:
+		is.seekg (0, is.end);
+		int length = is.tellg();
+		is.seekg (0, is.beg);	
+
+		char * buffer = new char [length];
+
+		is.read(buffer, length);
+
+		std::cout << buffer;
+
+		std::cout << "\n";
+
+		delete[] buffer;
+  }
+  return ;
 }
