@@ -19,12 +19,27 @@ using namespace connection;
 
 Ftp::Ftp(int socket)
 {
-    this->socket = socket;
+    this->sock = socket;
     setVersion("1");
 }
 
 Ftp::~Ftp()
 {
+	close(sock);
+}
+
+bool IsUnexpectedCharacters(char c)
+{
+    switch(c)
+    {
+    case '(':
+    case ')':
+    case '-':
+    case ' ': 
+        return true;
+    default:
+        return false;
+    }
 }
 
 void Ftp::comandos()
@@ -32,14 +47,19 @@ void Ftp::comandos()
     while (true)
     {
         std::string msg;
-        msg = receiveData();
+		std::cout<< "A receber mensagem\n";
+		msg = receiveMsg();
+        std::cout << "Mensagem : " << msg << "\n";
         std::string aux;
         aux = getCommand(msg);
         std::transform(aux.begin(), aux.end(), aux.begin(), ::toupper);
-        if(aux.compare(LS))
+		aux.erase(std::remove_if(aux.begin(), aux.end(),
+						 &IsUnexpectedCharacters), aux.end());
+        if(aux.compare("LS")==0)
         {
+			std::cout << "Comando LS\n";
             if(getTamanho(msg) > 0)
-                ls();
+                ls(".");
             else
             {
                 std::string caminho;
@@ -48,99 +68,96 @@ void Ftp::comandos()
             }
             
         }
-        else if(aux.compare(CD))
+        else if(aux.compare("CD") == 0)
         {
 
         }
-        else if(aux.compare(GET))
+        else if(aux.compare("GET") == 0)
         {
 
         }
-        else if(aux.compare(PUT))
+        else if(aux.compare("PUT") == 0)
         {
             
         }
-        else if(aux.compare(MKDIR))
+        else if(aux.compare("MKDIR") == 0)
         {
             
         }
-        else if(aux.compare(CLOSE))
+        else if(aux.compare("CLOSE") == 0)
         {
-            
+			std::cout << "Comando CLOSE";
+            close(sock);
+			return;
         }
+		else {
+			
+        	std::cout << "Comando : "<< aux << ".\n";
+			std::cout << "Comando desconhecio!!!\n";
+		}
     }
 }
 
-std::string Ftp::receiveData()
+std::string Ftp::receiveMsg()
 {
-    char data[1400];
-    std::string msg;
-    msg.append(data);
-    read(socket, data, sizeof(data));
-    msg.insert(0, data);
-
-    return msg;
-
+    /*
+        Receber apenas dados
+    */
+   char data[TAM_DATA];
+   std::string msg;
+   read(sock, data, sizeof(data));
+   msg.append(data);
+   return msg;
 }
 
-bool Ftp::sentData(std::string cmd, std::string msg)
+bool Ftp::sentData(bool more, std::string cmd, std::string msg)
 {
-    std::string send;
-    //Enviar mensagens parte por parte
-    while(true)
-    {
-        //Envio da mensagem pelo socket
-        char data[1400];
-        memset(data, ' ',sizeof(data));
-        //Couber em apenas uma mensagem
-        if(msg.size() <= 1388){
-            //Prepara a palavra
-            send = makeWord(cmd, "FM",msg);
-            strncpy(data, msg.c_str(), sizeof(data));
-
-            if(write(socket, data, sizeof(data))==-1)
-                return false;
-            else
-            {
-                //Tranferência concluída
-                break;
-            }
+    std::string sentMsg;
+    char data[TAM_DATA];
+    if(msg.size() < TAM_DATA){
+        if(more)
+        {
+            sentMsg = makeWord(cmd, "NM", msg);
         }
         else
         {
-            std::string aux;
-            aux = msg;
-            std::string temp;
-            while(true)
-            {
-                memset(data, ' ',sizeof(data));
-                //Envio da primeira parte primeiro
-                if(aux.size()>TAM_DATA){
-                    temp.insert(0, aux,0, TAM_DATA);
-                    aux.erase(0,TAM_DATA);
-                    send = makeWord(cmd, "NW", temp);
-                    strncpy(data, send.c_str(), sizeof(data));
-
-                    if(write(socket, data, sizeof(data))==-1)
-                        return false;
-                }
-                else
-                {
-                   temp.insert(0,aux, 0,aux.size());
-                   send = makeWord(cmd, "FM", temp);
-                   strncpy(data, send.c_str(), sizeof(data));
-
-                   if(write(socket, data, sizeof(data))==-1)
-                        return false;
-
-                    break;
-                }
-            }
+            sentMsg = makeWord(cmd, "FM", msg);
         }
     }
+    else
+    {
+        return false;
+    }
     
-    return true;
+    memset(data, ' ', sizeof(data));
+    strcpy(data, sentMsg.c_str());
+    write(sock, data, sizeof(data));
 
+    return true;
+}
+
+bool Ftp::sentCompleteData(std::string cmd, std::string msg)
+{
+    if(msg.size() <= TAM_DATA)
+    {
+        sentData(false, cmd, msg);
+    }
+    else
+    {
+        //Se a mensagem for maior que a q cabe
+        //no campo, dividir ela
+        int i = 0;
+        for(; ;i++)
+        {
+            if(i*TAM_DATA > msg.size())
+				break;
+           sentData(true, cmd, msg.substr(i*TAM_DATA, TAM_DATA));
+        }
+		sentData(false, cmd, msg.substr(i*TAM_DATA, 
+								msg.size() - i*TAM_DATA));
+    }
+
+    return true;
 }
 
 bool Ftp::ls(std::string caminho = ".")
@@ -148,8 +165,9 @@ bool Ftp::ls(std::string caminho = ".")
     std::vector<std::string > v;
     DIR* dirp = opendir(caminho.c_str());
     if (dirp == NULL) {
-            printf ("Error LS: Cannot open directory '%s'\n", v[1]);
-            sentData(LS, "LS:Error");
+            printf ("Error LS: Cannot open directory '%s'\n", 
+								caminho.c_str());
+            sentCompleteData(LS, "LS:Error");
             return false;
         }
     struct dirent * dp;
@@ -167,9 +185,8 @@ bool Ftp::ls(std::string caminho = ".")
     ss << v[i];
     }
     std::string s = ss.str();
-
     //Enviar dados
-    sentData("ls", s);
+    sentCompleteData("ls", s);
 
     return true;
 }

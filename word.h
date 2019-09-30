@@ -7,8 +7,10 @@
 #ifndef WORD_H_
 #define  WORD_H_
 #include <string>
+#include <iostream>
 
-#define TAM_DATA 1389
+//tamanho do campo mensagem
+#define TAM_DATA 1400
 
 namespace connection
 {
@@ -19,8 +21,6 @@ namespace connection
             std::string version;
             std::string command;
             void setVersion(std::string version);
-            void setCommand(std::string cmd);
-            std::string makeWord(std::string msg, std::string control);
             //Faz palavra
             std::string makeWord(std::string cmd, std::string control, std::string msg);
             //Verifica se há mensagens a serem a entregues

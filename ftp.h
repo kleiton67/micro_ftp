@@ -7,7 +7,6 @@
 #define FTP_H_
 
 #include <string>
-#include "word.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -18,6 +17,11 @@
 #include <sstream>
 #include <unistd.h>
 #include <cstring>
+#include <sys/socket.h>//Socket
+#include <sys/types.h>//Tipos para socket
+#include <arpa/inet.h> //addrstructure
+
+#include "word.h"
 
 #define LS    "LS   "
 #define CD    "CD   "
@@ -30,25 +34,26 @@ namespace connection
 {
     class Ftp : public Word{
 
+        private:
+            //Envia uma mensagem
+            bool sentData(bool more, std::string cmd, std::string msg);
+
         protected:
-            int socket;
+            int sock=0;
             //Verifica se o diretorio é valido
             bool dirValid(std::string caminho);
-            //Recebe uma mesagem completa
-            std::string receiveData();
+            //Recebe uma mesagem
+            std::string receiveMsg();
             //Envia mensagem completa
-            bool sentData(std::string cmd, std::string msg);
-            //Abre arquivo e inicia envio
-
-            //Envia mensagem por parte
-
-            //bool sentDataFile();
+            bool sentCompleteData(std::string cmd, std::string msg);
         public:
             Ftp(){}
             Ftp(int socket);
             ~Ftp();
-
-            //Traduz comandos
+            
+            //Verifica os caracteres
+            friend bool IsUnexpectedCharacters(char c);
+            //Traduz comandos recebidos em mensagens
             void comandos();
             //Retorna lista de arquivos em diretorio
             bool ls(std::string caminho);

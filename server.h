@@ -17,10 +17,11 @@
 #include <unistd.h>//Constantes para LINUX
 #include <pthread.h>//Bilblioteca para threads
 #include <map>//Estrutura de dados map
-#include "structArg.h"//Estrutura de dados para parametros de 
-//funcoes em multithread
 #include <utility>//pair
 #include <cstring>//preecher estrutura
+
+#include "structArg.h"//Estrutura de dados para parametros de 
+//funcoes em multithread
 
 namespace connection
 {

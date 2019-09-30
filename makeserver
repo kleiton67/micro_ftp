@@ -1,0 +1,14 @@
+OBJ = word.o ftp.o server.o
+LIB = -lpthread
+
+server.run: ${OBJ}
+	g++ main.cpp ${OBJ} -o server.run ${LIB}
+
+word.o : word.cpp word.h
+	g++ ${LIB} -c word.cpp
+ftp.o : ftp.cpp ftp.h
+	g++ ${LIB} -c ftp.cpp
+server.o : server.cpp server.h structArg.h
+	g++ ${LIB} -c server.cpp
+clean :
+	rm server.run ${OBJ}
