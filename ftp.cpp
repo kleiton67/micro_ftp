@@ -80,11 +80,13 @@ void Ftp::comandos()
         }
         else if(aux.compare("GET") == 0)
         {
-			
+			std::cout << "Comando GET\n";
+			get(getData(msg));
         }
         else if(aux.compare("PUT") == 0)
         {
-            
+            std::cout << "Comando PUT\n";
+			put(getData(msg));
         }
         else if(aux.compare("MKDIR") == 0)
         {
@@ -167,6 +169,7 @@ bool Ftp::sentFile(std::string caminho, std::string cmd)
 			if(sent == 1400)
 			{
 				sentData(true, cmd, msg);
+				sent = 0;
 			}
 		}
 
@@ -177,7 +180,7 @@ bool Ftp::sentFile(std::string caminho, std::string cmd)
 	}
 	else
 	{
-		std::cout << "Erro no arquivo: " << caminho << "- sentFile\n";
+		std::cout << "SENTFILE:rro no arquivo: " << caminho << "\n";
 		return false;
 	}
 	return false;
@@ -260,7 +263,7 @@ bool Ftp::ls(std::string caminho = ".")
     if (dirp == NULL) {
             printf ("Error CD: Cannot open directory '%s'\n", 
 								caminho.c_str());
-            sentCompleteData(LS, "LS:Error");
+            sentCompleteData(ERRO, "LS:Error");
             return false;
         }
     struct dirent * dp;
@@ -299,7 +302,7 @@ bool Ftp::cd(std::string name)
     if (dirp == NULL) {
             printf ("Error LS: Cannot open directory '%s'\n", 
 								name.c_str());
-            sentCompleteData(CD, "CD:Error");
+            sentCompleteData(ERRO, "CD:ERROR");
             return false;
         }
 	else
@@ -317,7 +320,7 @@ bool Ftp::mkdir(std::string name)
 	if (-1 == dir_err)
 	{
 		printf("Error creating directory!n");
-		sentCompleteData(MKDIR, "MKDIR:Error");
+		sentCompleteData(ERRO, "MKDIR:ERROR");
 		exit(1);
 	}
 	else
@@ -330,10 +333,41 @@ bool Ftp::mkdir(std::string name)
 
 bool Ftp::get(std::string file)
 {
+	//Envia primeira mensagem com o nome se achou o arquivo
+	//Caso contrario envia uma mensagem de erro
+	std::fstream arquivo(file);
+	if(arquivo)
+	{
+		sentCompleteData(GET, file);
+		sentFile(file, GET);
+	}
+	else
+	{
+		sentCompleteData(ERRO, "GET:ERROR");
+	}
 
+	sentFile(file, GET);
+	
 }
 
-bool Ftp::put()
+bool Ftp::put(std::string file)
 {
-
+	//Responde ao usuario
+	//Pois oque pode ocorrer é o arquivo ja existir
+	//no server
+	std::fstream arq(file);
+	if(!arq)
+	{
+		sentCompleteData(PUT, "PUT:OK");
+		std::cout << "PUT:Recebendo arquivo!!!\n";
+		receiveMsgRecordFile(file);
+		std::cout << "PUT:Arquivo Recebido do Cliente!!!\n";
+	}
+	else
+	{
+		sentCompleteData(ERRO, "PUT:ERROR");
+		return false;
+	}
+	return true;
+	
 }

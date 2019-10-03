@@ -32,6 +32,7 @@
 #define PUT   "PUT  "
 #define MKDIR "MKDIR"
 #define CLOSE "CLOSE"
+#define ERRO  "ERROR"
 
 namespace connection
 {
@@ -73,7 +74,7 @@ namespace connection
             //Envia arquivo solicitado
             bool get(std::string file);
             //Recebe arquivo solicitado
-            bool put();
+            bool put(std::string file);
             //Imprime dados recebidos
             void printReceive();
 

@@ -94,9 +94,9 @@ bool Client::comandoRequerido(std::string mensagem)
 
 	if(out[0] == "ls")
 	{
-		if(out.size() > 2){
+		if(out.size() >= 2){
 			//std::cout <<"Dados enviados ao server!!!\n";
-			sentCompleteData(LS, local+"/"+out[2]);
+			sentCompleteData(LS, local+"/"+out[1]);
 		}
 		else
 		{
@@ -122,10 +122,10 @@ bool Client::comandoRequerido(std::string mensagem)
 	else if(out[0] == "cd")
 	{
 		if(out.size() >= 2){
-			sentCompleteData(CD, local+out[1]);
+			sentCompleteData(CD, local+"/"+out[1]);
 			std::string msg;
-			msg = receiveAllMsg();
-			if(msg.compare("CD:OK") == 0)
+			msg = getCommand(receiveMsg());
+			if(msg.compare(ERRO) != 0)
 			{
 				//Fazer uma pilha de diretorios
 				//toda vez que identificar o ..
@@ -134,7 +134,7 @@ bool Client::comandoRequerido(std::string mensagem)
 			}
 			else
 			{
-				std::cout << "cd: Diretorio Não Encontrado!!!\n"
+				std::cout << "cd: Diretorio Não Encontrado!!!\n";
 			}
 			
 		}
@@ -150,7 +150,7 @@ bool Client::comandoRequerido(std::string mensagem)
 		{
 			sentCompleteData(MKDIR, local+"/"+out[1]);
 			std::string msg;
-			msg = receiveAllMsg();
+			msg = getCommand(receiveMsg());
 			if(msg.compare("MKDIR:OK") == 0)
 			{
 				std::cout << "mkdir: Diretorio criado com sucesso!!!\n";
@@ -161,6 +161,69 @@ bool Client::comandoRequerido(std::string mensagem)
 			}
 			
 		}
+		else
+		{
+			msgIncomplete();
+		}
+		
+	}
+	else if(out[0] == "get")
+	{
+		if(out.size()>=2)
+		{
+			//Envia requisição
+			//Aguarda retorno da mensagem com nome
+			//Monta o arquivo
+			sentCompleteData(GET, local+"/"+out[1]);
+			std::string msg;
+			msg = getCommand(receiveMsg());
+			if(msg.compare(ERRO) != 0)
+			{
+				std::cout << "get: Recebendo Arquivo : " << out[1] << "\n";
+				receiveMsgRecordFile(out[1]);
+			}
+			else
+			{
+				std::cout << "get: Arquivo indisponivel no servidor!!!\n";
+			}
+			
+		}
+		else
+		{
+			msgIncomplete();
+		}
+		
+	}
+	else if(out[0] == "put")
+	{
+		//Envia arquivo ao servidor
+		if(out.size()>=2)
+		{
+			//Envia mensagem com o dado e nome
+			std::cout<<"CLIENT: Envia mensagem de solicitacao de PUT.\n";
+			sentCompleteData(PUT, local+"/"+out[1]);
+			//sleep(0.5);
+			std::string msg;
+			msg = getCommand(receiveMsg());
+			if(msg.compare(ERRO)!=0)
+			{
+				//No retorno nao houve problema
+				//Inicia transferencia
+				//sleep(0.5);	
+				std::cout << "CIENT: Enviando dados ao servidor!\n";
+				sentFile(out[1], PUT);
+			}
+			else
+			{
+				std::cout << "put: Problema no servidor";
+			}
+			
+		}
+		else
+		{
+			msgIncomplete();
+		}
+		
 	}
     else
     {
