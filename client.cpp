@@ -181,7 +181,6 @@ bool Client::comandoRequerido(std::string mensagem)
 			{
 				std::cout << "get: Recebendo Arquivo : " << out[1] << "\n";
 				receiveMsgRecordFile(out[1]);
-				std::cout << "get: Arquivo Recebido!!!\n"; 
 			}
 			else
 			{

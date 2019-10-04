@@ -170,13 +170,11 @@ bool Ftp::sentFile(std::string caminho, std::string cmd)
 			{
 				sentData(true, cmd, msg);
 				sent = 0;
-				std::cout << "SentFile:Parte Enviada!!!\n";
 			}
 		}
 
 		//Envia o resto que faltou
 		sentData(false, cmd, msg);
-		std::cout << "SentFIle:Parte Final Enviada\n";
 
 		//Ultima parte do arquivo
 	}
