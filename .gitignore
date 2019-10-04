@@ -33,6 +33,5 @@
 *.run
 
 # Directories of tests
-
-/teste
+./teste/*
 
