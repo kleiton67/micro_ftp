@@ -56,11 +56,11 @@ bool Client::comunicacaoServer()
        imprimeCabecalho();
        
     	std::string comando;
+		std::cin.clear();
     	std::getline(std::cin, comando);
 		if(	!comandoRequerido(comando))
 			return false;
-
-
+		comando = "ERROR";
    }
 }
 
@@ -180,7 +180,8 @@ bool Client::comandoRequerido(std::string mensagem)
 			if(msg.compare(ERRO) != 0)
 			{
 				std::cout << "get: Recebendo Arquivo : " << out[1] << "\n";
-				receiveMsgRecordFile(out[1]);
+				//receiveMsgRecordFile(out[1]);
+				receiveBinRecord(out[1]);
 				std::cout << "get: Arquivo Recebido!!!\n";
 			}
 			else
@@ -200,19 +201,29 @@ bool Client::comandoRequerido(std::string mensagem)
 		//Envia arquivo ao servidor
 		if(out.size()>=2)
 		{
+			std::fstream file(out[1], std::ios::binary|std::ios::in);
+			if(file){
+				file.close();
 			//Envia mensagem com o dado e nome
-			std::cout<<"CLIENT: Envia mensagem de solicitacao de PUT.\n";
-			sentCompleteData(PUT, local+"/"+out[1]);
-			//sleep(0.5);
-			std::string msg;
-			msg = getCommand(receiveMsg());
-			if(msg.compare(ERRO)!=0)
-			{
-				//No retorno nao houve problema
-				//Inicia transferencia
-				//sleep(0.5);	
-				std::cout << "CIENT: Enviando dados ao servidor!\n";
-				sentFile(out[1], PUT);
+				std::cout<<"CLIENT: Envia mensagem de solicitacao de PUT.\n";
+				sentCompleteData(PUT, local+"/"+out[1]);
+				//sleep(0.5);
+				std::string msg;
+				msg = getCommand(receiveMsg());
+				if(msg.compare(ERRO)!=0)
+				{
+					//No retorno nao houve problema
+					//Inicia transferencia
+					//sleep(0.5);	
+					std::cout << "CIENT: Enviando dados ao servidor!\n";
+					//sentFile(out[1], PUT);
+					sentFileBin(out[1], PUT);
+				}
+				else
+				{
+					std::cout << "Arquivo nao encontrado!!!\n";
+				}
+				
 			}
 			else
 			{

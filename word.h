@@ -7,10 +7,14 @@
 #ifndef WORD_H_
 #define  WORD_H_
 #include <string>
+#include <vector>
+#include <cstring>
 #include <iostream>
 
 //tamanho do campo mensagem
 #define TAM_DATA 1400
+#define TAM_CAB 12
+#define caractereDep ' '
 
 namespace connection
 {
@@ -21,18 +25,30 @@ namespace connection
             std::string version;
             std::string command;
             void setVersion(std::string version);
-            //Faz palavra
+            //Faz palavra com string
             std::string makeWord(std::string cmd, std::string control, std::string msg);
+            //Faz palavra com char
+            char* makeWord(std::string cmd, std::string control, char* msg, int bytes);
             //Verifica se há mensagens a serem a entregues
             bool nextMessage(std::string msg);
+            //Verifica se ha mensagem
+            bool nextMessage(char * msg);
             //Obtem comando da palavra
             std::string getCommand(std::string msg);
             //Obtem somente mensagem
             std::string getData(std::string msg);
+            //Obtem somente mensagem
+            char* getData(char* msg);
             //Obtem tamanho da mensagem
             int getTamanho(std::string msg);
             //Prepara tamanho da palavra
             std::string setTamanho(int tam);
+            //Retorna ponteiro de char para tamanho
+            char * setTamanho(short tam);
+            //Retorna o tamanho da palavra
+            int getTamanho(char* msg);
+            //Imprime vetor
+            void print(char * vetor, int tam);
         public:
             Word();
             ~Word();

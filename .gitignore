@@ -34,4 +34,5 @@
 
 # Directories of tests
 ./teste/*
+./bin/*
 

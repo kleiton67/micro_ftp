@@ -22,6 +22,7 @@
 #include <arpa/inet.h> //addrstructure
 #include <fstream> //Manipulação de arquivos
 #include <cstdlib> //system
+#include <fcntl.h> // open
  
 
 #include "word.h"
@@ -56,6 +57,11 @@ namespace connection
             bool receiveMsgRecordFile(std::string caminho);
             //Envia mensagem em binario a partir de um arquivo
             bool sentFile(std::string caminho, std::string cmd);
+            //Envio de arquivos binarios
+            bool sentFileBin(std::string caminho, std::string cmd);
+            //Recebimento de arquivos Binarios
+            bool receiveBinRecord(std::string caminho);
+            
         public:
             Ftp(){}
             Ftp(int socket);
@@ -67,7 +73,7 @@ namespace connection
             void comandos();
             //Retorna lista de arquivos em diretorio
             bool ls(std::string caminho);
-            //Muda de diretórioo
+            //Muda de diretório
             bool cd(std::string caminho);
             //Cria pasta
             bool mkdir(std::string name);

@@ -1,5 +1,6 @@
 # micro_ftp
-Construção de um ftp simples
+Construção de um programa simples de transferencia de arquivos
+ATENÇÃO: NÃO SEGUE PROTOCOLO FTP
 
 # Arquivos globais
 Os arquivos globais são usados tanto para cliente quanto servidor, e esta relacionado ao padrão de comunicação
@@ -21,3 +22,5 @@ Para compilar: make -f makeclient
 Relacionados a conexão com o cliente:
 	->client.h
 
+# Creditos
+Agradecimentos ao professor Marcos Paulo, alunos e amigos de turma, e também a um grande programador que me ajudou com varias duvidas https://github.com/mgnischor.

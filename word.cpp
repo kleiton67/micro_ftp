@@ -30,16 +30,75 @@ std::string Word::makeWord(std::string cmd, std::string control,
     std::string total;
     total.append(version);//0 - byte
     total.append(cmd);//1 - 5 byte
-    total.append(setTamanho(msg.size()));//6-9
+    total.append(setTamanho((int)msg.size()));//6-9
     total.append(control);//10-11 byte
     total.append(msg);//Mensagem 12 -
     return total;
 
 }
 
+char* Word::makeWord(std::string cmd, std::string control, char* msg, 
+                int bytes)
+{
+    //Tamanho apenas do dado
+    char * word = new char[TAM_DATA];
+    memset(word, caractereDep, TAM_DATA);
+    char comando[7];
+    strcpy(comando, cmd.c_str());
+    char * tam;
+    tam = setTamanho((short)bytes);
+    word[0] = '1';
+    word[1] = comando[0];
+    word[2] = comando[1];
+    word[3] = comando[2];
+    word[4] = comando[3];
+    word[5] = comando[4];
+    word[6] = tam[0];
+    word[7] = tam[1];
+    word[8] = tam[2];
+    word[9] = tam[3];
+    char ctl[3];
+    strcpy(ctl, control.c_str());
+    word[10] = ctl[0];
+    word[11] = ctl[1];
+    for(int i = 12; i<bytes; i++)
+    {
+       word[i-12] = msg[i];
+    }
+    return word;
+}
+
 bool Word::nextMessage(std::string msg)
 {
-    return msg.compare(6,7,"NM")==0;
+    std::cout << "nextMessage\n";
+    if (msg.compare(10,2,"NM")==0)
+    {
+        std::cout << "nextMessage: Há mensagem!!!\n";
+        return true;
+    }
+    if (msg.compare(10,2,"FM") == 0)
+    {
+        std::cout << "nextMessage: Não Há mensagem!!!\n";        
+        return false;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Word::nextMessage(char * msg)
+{
+    if(msg[10]=='N' && msg[11] == 'M'){
+        std::cout << "NM: Ha mais mensagens!!!\n";
+        return true;
+    }
+    else
+    {
+        std::cout << "NM: Nao Ha mais mensagens!!!\n";
+        return false;
+    }
+    
 }
 
 std::string Word::getCommand(std::string msg)
@@ -61,16 +120,35 @@ std::string Word::getData(std::string msg)
 {
     if(msg.size() > 12){
         int tamanho = 0;
-        tamanho = msg[6]*1000+msg[7]*100+msg[8]*10+msg[9];
+        tamanho = getTamanho(msg);
         return msg.substr(12, tamanho);
     }
     else
         return " ";
 }
 
+char* Word::getData(char* msg)
+{
+
+    int tamanho = getTamanho(msg);
+    char * word = new char[tamanho];
+    for(int i = 0;i<tamanho; i++)
+    {
+            word[i] = msg[i+12];
+    }
+    return word;
+}
+
 int Word::getTamanho(std::string msg)
 {
     return msg[6]*1000+msg[7]*100+msg[8]*10+msg[9];
+}
+
+int Word::getTamanho(char* msg)
+{
+    int tamanho;
+    tamanho = msg[6]*1000+msg[7]*100+msg[8]*10+msg[9];
+    return tamanho;
 }
 
 std::string Word::setTamanho(int tam)
@@ -79,6 +157,22 @@ std::string Word::setTamanho(int tam)
     sprintf(aux, "%.4d", tam);
     std::string stg;
     stg.append(aux);
-    //retira o \0;
     return stg;
+}
+
+char * Word::setTamanho(short tam)
+{
+    char *aux = new char[5];
+    sprintf(aux, "%.4d", tam);
+    return aux;
+}
+
+void Word::print(char *vetor, int tam)
+{
+    printf("Impressao do vetor: \n");
+    for (int i = 0 ; i < 20; i++)
+    {
+        printf("%c\n", vetor[i]);
+    }
+    printf("Fim da impressao do vetor\n");
 }
