@@ -181,7 +181,8 @@ bool Client::comandoRequerido(std::string mensagem)
 			{
 				std::cout << "get: Recebendo Arquivo : " << out[1] << "\n";
 				//receiveMsgRecordFile(out[1]);
-				receiveBinRecord(out[1]);
+				//receiveBinRecord(out[1]);
+				receiveBinRecordFile(out[1]);
 				std::cout << "get: Arquivo Recebido!!!\n";
 			}
 			else
@@ -217,7 +218,6 @@ bool Client::comandoRequerido(std::string mensagem)
 					//sleep(0.5);	
 					std::cout << "CIENT: Enviando dados ao servidor!\n";
 					//sentFile(out[1], PUT);
-					sentFileBin(out[1], PUT);
 				}
 				else
 				{

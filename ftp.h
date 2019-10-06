@@ -57,11 +57,10 @@ namespace connection
             bool receiveMsgRecordFile(std::string caminho);
             //Envia mensagem em binario a partir de um arquivo
             bool sentFile(std::string caminho, std::string cmd);
-            //Envio de arquivos binarios
-            bool sentFileBin(std::string caminho, std::string cmd);
             //Recebimento de arquivos Binarios
-            bool receiveBinRecord(std::string caminho);
-            
+            bool receiveBinRecordFile(std::string caminho);
+            //Envio de arquivos binarios
+            bool sentFileBinArq(std::string caminho, std::string cmd);
         public:
             Ftp(){}
             Ftp(int socket);

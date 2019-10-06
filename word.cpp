@@ -37,35 +37,30 @@ std::string Word::makeWord(std::string cmd, std::string control,
 
 }
 
-char* Word::makeWord(std::string cmd, std::string control, char* msg, 
+void Word::makeWordchar(char* word, const char* cmd, const char* control, char* msg, 
                 int bytes)
 {
     //Tamanho apenas do dado
-    char * word = new char[TAM_DATA];
     memset(word, caractereDep, TAM_DATA);
     char comando[7];
-    strcpy(comando, cmd.c_str());
     char * tam;
     tam = setTamanho((short)bytes);
     word[0] = '1';
-    word[1] = comando[0];
-    word[2] = comando[1];
-    word[3] = comando[2];
-    word[4] = comando[3];
-    word[5] = comando[4];
+    word[1] = cmd[0];
+    word[2] = cmd[1];
+    word[3] = cmd[2];
+    word[4] = cmd[3];
+    word[5] = cmd[4];
     word[6] = tam[0];
     word[7] = tam[1];
     word[8] = tam[2];
     word[9] = tam[3];
-    char ctl[3];
-    strcpy(ctl, control.c_str());
-    word[10] = ctl[0];
-    word[11] = ctl[1];
+    word[10] = control[0];
+    word[11] = control[1];
     for(int i = 12; i<bytes; i++)
     {
-       word[i-12] = msg[i];
+       word[12+i] = msg[i];
     }
-    return word;
 }
 
 bool Word::nextMessage(std::string msg)
@@ -127,16 +122,14 @@ std::string Word::getData(std::string msg)
         return " ";
 }
 
-char* Word::getData(char* msg)
+void Word::getData(char* msg, char * word)
 {
 
     int tamanho = getTamanho(msg);
-    char * word = new char[tamanho];
     for(int i = 0;i<tamanho; i++)
     {
             word[i] = msg[i+12];
     }
-    return word;
 }
 
 int Word::getTamanho(std::string msg)
@@ -147,7 +140,7 @@ int Word::getTamanho(std::string msg)
 int Word::getTamanho(char* msg)
 {
     int tamanho;
-    tamanho = msg[6]*1000+msg[7]*100+msg[8]*10+msg[9];
+    tamanho = ((int)msg[6]-48)*1000+((int)msg[7]-48)*100+((int)msg[8]-48)*10+((int)msg[9]-48);
     return tamanho;
 }
 
@@ -170,7 +163,7 @@ char * Word::setTamanho(short tam)
 void Word::print(char *vetor, int tam)
 {
     printf("Impressao do vetor: \n");
-    for (int i = 0 ; i < 20; i++)
+    for (int i = 0 ; i < tam; i++)
     {
         printf("%c\n", vetor[i]);
     }

@@ -28,7 +28,8 @@ namespace connection
             //Faz palavra com string
             std::string makeWord(std::string cmd, std::string control, std::string msg);
             //Faz palavra com char
-            char* makeWord(std::string cmd, std::string control, char* msg, int bytes);
+            void makeWordchar(char* word, const char* cmd, const char* control, char* msg, 
+                int bytes);
             //Verifica se há mensagens a serem a entregues
             bool nextMessage(std::string msg);
             //Verifica se ha mensagem
@@ -37,8 +38,8 @@ namespace connection
             std::string getCommand(std::string msg);
             //Obtem somente mensagem
             std::string getData(std::string msg);
-            //Obtem somente mensagem
-            char* getData(char* msg);
+            //Obtem somente mensagem 
+            void getData(char* msg, char * data);
             //Obtem tamanho da mensagem
             int getTamanho(std::string msg);
             //Prepara tamanho da palavra
