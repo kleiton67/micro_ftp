@@ -301,6 +301,7 @@ bool Ftp::cd(std::string name)
 {
 	//Navega pelos diretorios
 	DIR* dirp = opendir(name.c_str());
+	//bool dirp = chdir(name.c_str());
     if (dirp == NULL) {
             printf ("Error LS: Cannot open directory '%s'\n", 
 								name.c_str());
@@ -390,9 +391,9 @@ bool Ftp::sentFileBinArq(std::string caminho, std::string cmd)
 			//std::cout << "sentFileBinArq: Enviando file1\n";
 			file.read(temp, sizeof(char));
 			//std::cout << temp;
-			buffer[sent] = *temp; 
+			buffer[sent] = temp[0]; 
 			sent++;
-			if(sent ==(TAM_DATA - 1))
+			if(sent ==TAM_DATA)
 			{
 				//std::cout << "sentFileBinArq: Enviando file2\n";
 				//Envia no tamnho de TAM_DATA

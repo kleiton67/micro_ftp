@@ -128,7 +128,7 @@ void Word::getData(char* msg, char * word)
     int tamanho = getTamanho(msg);
     for(int i = 0;i<tamanho; i++)
     {
-            word[i] = msg[i+12];
+            word[i] = msg[i+TAM_CAB];
     }
 }
 
