@@ -33,5 +33,8 @@
 *.run
 
 # Directories of tests
-micro_ftp/teste
-micro_tp/bin
+teste/
+bin/
+
+# Files of buffer
+.l*
