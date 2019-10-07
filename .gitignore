@@ -33,6 +33,5 @@
 *.run
 
 # Directories of tests
-./teste/*
-./bin/*
-
+micro_ftp/teste/
+micro_ftp/bin/
