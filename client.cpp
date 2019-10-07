@@ -126,7 +126,7 @@ bool Client::comandoRequerido(std::string mensagem)
 			std::string msg;
 			msg = getCommand(receiveMsg());
 			if(msg.compare(ERRO) != 0)
-			{
+			{	
 				//Fazer uma pilha de diretorios
 				//toda vez que identificar o ..
 				//retirar uma string da pilha
@@ -148,10 +148,11 @@ bool Client::comandoRequerido(std::string mensagem)
 	{
 		if(out.size() >= 2)
 		{
-			sentCompleteData(MKDIR, local+"/"+out[1]);
+			//sentCompleteData(MKDIR, local+"/"+out[1]);
+			sentCompleteData(MKDIR, out[1]);
 			std::string msg;
 			msg = getCommand(receiveMsg());
-			if(msg.compare("MKDIR:OK") == 0)
+			if(msg.compare(ERRO) != 0)
 			{
 				std::cout << "mkdir: Diretorio criado com sucesso!!!\n";
 			}
@@ -217,7 +218,7 @@ bool Client::comandoRequerido(std::string mensagem)
 					//Inicia transferencia
 					//sleep(0.5);	
 					std::cout << "CIENT: Enviando dados ao servidor!\n";
-					//sentFile(out[1], PUT);
+					sentFileBinArq(out[1], PUT);
 				}
 				else
 				{
@@ -227,7 +228,7 @@ bool Client::comandoRequerido(std::string mensagem)
 			}
 			else
 			{
-				std::cout << "put: Problema no servidor";
+				std::cout << "PUT: Arquivo Nao encontrado!!!";
 			}
 			
 		}

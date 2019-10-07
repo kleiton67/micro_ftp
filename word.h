@@ -28,7 +28,7 @@ namespace connection
             //Faz palavra com string
             std::string makeWord(std::string cmd, std::string control, std::string msg);
             //Faz palavra com char
-            void makeWordchar(char* word, const char* cmd, const char* control, char* msg, 
+            void makeWordchar(char* word, const char* cmd, const char* control, const char* msg, 
                 int bytes);
             //Verifica se há mensagens a serem a entregues
             bool nextMessage(std::string msg);

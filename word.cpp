@@ -37,12 +37,11 @@ std::string Word::makeWord(std::string cmd, std::string control,
 
 }
 
-void Word::makeWordchar(char* word, const char* cmd, const char* control, char* msg, 
+void Word::makeWordchar(char* word, const char* cmd, const char* control, const char* msg, 
                 int bytes)
 {
     //Tamanho apenas do dado
-    memset(word, caractereDep, TAM_DATA);
-    char comando[7];
+    memset(word, caractereDep, bytes);
     char * tam;
     tam = setTamanho((short)bytes);
     word[0] = '1';
@@ -57,23 +56,24 @@ void Word::makeWordchar(char* word, const char* cmd, const char* control, char* 
     word[9] = tam[3];
     word[10] = control[0];
     word[11] = control[1];
-    for(int i = 12; i<bytes; i++)
+    for(int i = TAM_CAB; i<bytes+TAM_CAB; i++)
     {
-       word[12+i] = msg[i];
+       word[i] = msg[i-TAM_CAB];
     }
 }
 
+
 bool Word::nextMessage(std::string msg)
 {
-    std::cout << "nextMessage\n";
+    //std::cout << "nextMessage\n";
     if (msg.compare(10,2,"NM")==0)
     {
-        std::cout << "nextMessage: Há mensagem!!!\n";
+        //std::cout << "nextMessage: Há mensagem!!!\n";
         return true;
     }
     if (msg.compare(10,2,"FM") == 0)
     {
-        std::cout << "nextMessage: Não Há mensagem!!!\n";        
+        //std::cout << "nextMessage: Não Há mensagem!!!\n";        
         return false;
     }
     else
@@ -85,12 +85,12 @@ bool Word::nextMessage(std::string msg)
 bool Word::nextMessage(char * msg)
 {
     if(msg[10]=='N' && msg[11] == 'M'){
-        std::cout << "NM: Ha mais mensagens!!!\n";
+        //std::cout << "NM: Ha mais mensagens!!!\n";
         return true;
     }
     else
     {
-        std::cout << "NM: Nao Ha mais mensagens!!!\n";
+        //std::cout << "NM: Nao Ha mais mensagens!!!\n";
         return false;
     }
     

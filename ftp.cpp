@@ -188,7 +188,7 @@ std::string Ftp::receiveMsg()
         Receber apenas dados
 		Precisa implementar a obtenção de dados de varias 
 			mensagens
-    */
+    */	
    char data[TAM_DATA+TAM_CAB];
    std::string msg;
    read(sock, data, TAM_DATA+TAM_CAB);
@@ -240,12 +240,15 @@ bool Ftp::sentCompleteData(std::string cmd, std::string msg)
         int i = 0;
         for(; ;i++)
         {
-            if(i*TAM_DATA > msg.size())
+            if((i+1)*TAM_DATA > msg.size())
 				break;
-           sentData(true, cmd, msg.substr(i*TAM_DATA, TAM_DATA));
+           if(!sentData(true, cmd, msg.substr(i*TAM_DATA, TAM_DATA)))
+				std::cout << "sentCompleteData: Falha no envio da mensagem!!!\n";
         }
-		sentData(false, cmd, msg.substr(i*TAM_DATA, 
-								msg.size() - i*TAM_DATA));
+		if(!sentData(false, cmd, msg.substr(i*TAM_DATA, 
+								msg.size() - i*TAM_DATA)))
+				std::cout << "sentCompleteData: Falha no envio da mensagem!!!\n";
+
     }
 
     return true;
@@ -337,6 +340,7 @@ bool Ftp::get(std::string file)
 	std::fstream arquivo(file);
 	if(arquivo)
 	{
+		arquivo.close();
 		sentCompleteData(GET, file);
 		std::cout << "Enviando arquivo: " << file << "\n";
 		//sentFile(file, GET);
@@ -357,10 +361,11 @@ bool Ftp::put(std::string file)
 	std::fstream arq(file);
 	if(!arq)
 	{
+		arq.close();
 		sentCompleteData(PUT, "PUT:OK");
-		std::cout << "PUT:Recebendo arquivo!!!\n";
+		//std::cout << "PUT:Recebendo arquivo!!!\n";
 		receiveMsgRecordFile(file);
-		std::cout << "PUT:Arquivo Recebido do Cliente!!!\n";
+		//std::cout << "PUT:Arquivo Recebido do Cliente!!!\n";
 	}
 	else
 	{
@@ -379,11 +384,11 @@ bool Ftp::sentFileBinArq(std::string caminho, std::string cmd)
 		char buffer[TAM_DATA];
 		char  temp[1];
 		char *palavra = new char[TAM_DATA+TAM_CAB];
-		std::cout << "sentFileBinArq: Enviando file\n";
+		//std::cout << "sentFileBinArq: Enviando file\n";
 		while(file.tellg()!=EOF)
 		{
 			//std::cout << "sentFileBinArq: Enviando file1\n";
-			file.read(temp, 1);
+			file.read(temp, sizeof(char));
 			//std::cout << temp;
 			buffer[sent] = *temp; 
 			sent++;
@@ -397,14 +402,14 @@ bool Ftp::sentFileBinArq(std::string caminho, std::string cmd)
 				sent = 0;
 			}
 		}
-		std::cout << "sentFileBinArq: Enviando file3\n";
+		//std::cout << "sentFileBinArq: Enviando file3\n";
 		//Envia o resto
 		makeWordchar(palavra, cmd.c_str(), (char*)"FM", buffer, sent);
-		print(palavra, 30);
+		//print(palavra, 30);
 		write(sock, palavra, TAM_DATA+TAM_CAB);
 		//send(sock, palavra, TAM_DATA+TAM_CAB, 0);
-		std::cout << "SentFileBin: Enviado com sucesso: " << 
-		caminho << "\n";
+		//std::cout << "SentFileBin: Enviado com sucesso: " << 
+		//caminho << "\n";
 		return true;
 	}
 	else
@@ -424,10 +429,10 @@ bool Ftp::receiveBinRecordFile(std::string caminho)
 		char * palavra = new char[TAM_DATA+TAM_CAB];
 		char * data = new char[TAM_DATA];
 		memset(palavra, caractereDep, TAM_DATA+TAM_CAB);
-		std::cout << "RcvBin: Entrada na funcao\n";
+		//std::cout << "RcvBin: Entrada na funcao\n";
 		//read(sock, palavra, TAM_DATA+TAM_CAB);
 		recv(sock, palavra, TAM_CAB+TAM_DATA, 0);
-		std::cout << "RcvBin: Recebido Primeiro mensagem\n";
+		//std::cout << "RcvBin: Recebido Primeiro mensagem\n";
 		while(nextMessage(palavra))
 		{
 			getData(palavra, data);
@@ -438,10 +443,10 @@ bool Ftp::receiveBinRecordFile(std::string caminho)
 		getData(palavra, data);
 		int t_msg;
 		t_msg = getTamanho(palavra);
-		std::cout << "RcvBin: Tamanho da mensagem: " << t_msg << "\n";
+		//std::cout << "RcvBin: Tamanho da mensagem: " << t_msg << "\n";
 		file.write(data, t_msg);
-		std::cout << "RcvBin: Recebido ultimo mensagem " 
-		<< "\n";
+		//std::cout << "RcvBin: Recebido ultimo mensagem " 
+		//<< "\n";
 		file.close();
 		return true;
 	}
