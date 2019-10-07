@@ -5,7 +5,7 @@
 #include "client.h"
 #include <vector>
 
-#define PORTCMT 20000
+#define PORTCMT 30100
 
 using namespace connection;
 

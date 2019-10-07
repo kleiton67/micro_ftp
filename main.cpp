@@ -13,7 +13,7 @@
 #include <time.h> //manipulação de data
 #include "ftp.h"
 
-#define PORTCMT  20000
+#define PORTCMT  30100
 
 using namespace connection;
 

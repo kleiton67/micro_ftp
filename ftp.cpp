@@ -44,8 +44,10 @@ bool IsUnexpectedCharacters(char c)
 
 void Ftp::comandos()
 {
+	local.push_back(".");
     while (true)
     {
+		std::cout << "Local : " << directory(local);
         std::string msg;
 		std::cout<< "A receber mensagem\n";
 		msg = receiveMsg();
@@ -60,16 +62,8 @@ void Ftp::comandos()
 			/*
 				Cria arquivo e envia ao cliente
 			*/
-			std::cout << "Comando LS\n";
-            if(getTamanho(msg) < 13)
-                ls(".");
-            else
-            {
-                std::string caminho;
-                caminho = getData(msg);
-                ls(caminho);
-            }
-            
+			std::cout << "Comando LS : " << directory(local) << "\n";
+            ls(directory(local));
         }
         else if(aux.compare("CD") == 0)
         {
@@ -81,17 +75,17 @@ void Ftp::comandos()
         else if(aux.compare("GET") == 0)
         {
 			std::cout << "Comando GET\n";
-			get(getData(msg));
+			get(directory(local)+getData(msg));
         }
         else if(aux.compare("PUT") == 0)
         {
             std::cout << "Comando PUT\n";
-			put(getData(msg));
+			put(directory(local)+getData(msg));
         }
         else if(aux.compare("MKDIR") == 0)
         {
 			std::cout << "Comando MKDIR\n";
-			mkdir(getData(msg));
+			mkdir(directory(local)+getData(msg));
         }
         else if(aux.compare("CLOSE") == 0)
         {
@@ -263,8 +257,8 @@ bool Ftp::ls(std::string caminho = ".")
     std::vector<std::string > v;
     DIR* dirp = opendir(caminho.c_str());
     if (dirp == NULL) {
-            printf ("Error CD: Cannot open directory '%s'\n", 
-								caminho.c_str());
+            std::cout << "0Error LS: Cannot open directory " << 
+								caminho << "\n";
             sentCompleteData(ERRO, "LS:Error");
             return false;
         }
@@ -300,17 +294,33 @@ bool Ftp::ls(std::string caminho = ".")
 bool Ftp::cd(std::string name)
 {
 	//Navega pelos diretorios
-	DIR* dirp = opendir(name.c_str());
-	//bool dirp = chdir(name.c_str());
-    if (dirp == NULL) {
+	std::string c_local;
+	c_local = directory(local) + name + "/";
+	DIR* dirp = opendir(c_local.c_str());
+    if ( dirp == NULL) {
             printf ("Error LS: Cannot open directory '%s'\n", 
-								name.c_str());
+								c_local.c_str());
             sentCompleteData(ERRO, "CD:ERROR");
             return false;
         }
 	else
 	{
 		sentCompleteData(CD, "CD:OK");
+		if(name.compare("..") == 0)
+		{
+			if(local.size() > 1)
+				local.pop_back();
+		}
+		else if(name.compare(".") == 0)
+		{
+			std::cout << ".\n";	
+		}
+		else
+		{
+			local.push_back(name);
+		}
+		
+		
 	}
 	return true;
 }
@@ -364,9 +374,9 @@ bool Ftp::put(std::string file)
 	{
 		arq.close();
 		sentCompleteData(PUT, "PUT:OK");
-		//std::cout << "PUT:Recebendo arquivo!!!\n";
+		std::cout << "PUT:Recebendo arquivo!!!\n";
 		receiveMsgRecordFile(file);
-		//std::cout << "PUT:Arquivo Recebido do Cliente!!!\n";
+		std::cout << "PUT:Arquivo Recebido do Cliente!!!\n";
 	}
 	else
 	{
@@ -456,4 +466,17 @@ bool Ftp::receiveBinRecordFile(std::string caminho)
 		std::cout << "Problema ao manipular arquivo!!!\n";
 		return false;
 	}
+
+}
+
+std::string Ftp::directory(std::vector<std::string > msg)
+{
+	std::string dir;
+	std::vector<std::string > :: iterator it = msg.begin();
+	for( ; it!= msg.end(); it++)
+	{
+		dir.append(*it);
+		dir.append("/");
+	}
+	return dir;
 }

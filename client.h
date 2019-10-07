@@ -16,7 +16,6 @@ namespace connection{
             short int port;
             struct sockaddr_in confServer;
             //Contem caminho da pasta atual
-            std::string local = ".";
 
         public:
             Client(){};

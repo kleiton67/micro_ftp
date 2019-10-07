@@ -81,7 +81,7 @@ std::vector<std::string> Client::tokenize(std::string const &str,
 
 void Client::imprimeCabecalho()
 {
-    std::cout << '<' << address << " : " << local << '>' << ':';
+    std::cout << '<' << address << '>' << ':';
 }
 
 bool Client::comandoRequerido(std::string mensagem)
@@ -94,24 +94,11 @@ bool Client::comandoRequerido(std::string mensagem)
 
 	if(out[0] == "ls")
 	{
-		if(out.size() >= 2){
-			//std::cout <<"Dados enviados ao server!!!\n";
-			sentCompleteData(LS, local+"/"+out[1]);
-		}
-		else
-		{
-			//std::cout << "Envio de dados!!!\n";	
-			sentCompleteData(LS, local);
-			std::string msg_receive;
-			//std::cout << "Recebendo dados!!!3\n";
-			//msg_receive = receiveAllMsg();
-			//std::cout << getData(msg_receive);
-			//Grava dados tranferidos em arquivo
-			receiveMsgRecordFile(".ls");
-			//Imprime dados do arquivo
-			imprimeFile(".ls");
+		sentCompleteData(LS, ".");
+		receiveMsgRecordFile(".ls");
+		//Imprime dados do arquivo
+		imprimeFile(".ls");
 
-		}
     }
 	else if(out[0] == "close")
 	{
@@ -122,17 +109,10 @@ bool Client::comandoRequerido(std::string mensagem)
 	else if(out[0] == "cd")
 	{
 		if(out.size() >= 2){
-			sentCompleteData(CD, local+"/"+out[1]);
+			sentCompleteData(CD, out[1]);
 			std::string msg;
 			msg = getCommand(receiveMsg());
-			if(msg.compare(ERRO) != 0)
-			{	
-				//Fazer uma pilha de diretorios
-				//toda vez que identificar o ..
-				//retirar uma string da pilha
-				local = local+"/"+out[1];
-			}
-			else
+			if(msg.compare(ERRO) == 0)
 			{
 				std::cout << "cd: Diretorio Não Encontrado!!!\n";
 			}
@@ -175,7 +155,7 @@ bool Client::comandoRequerido(std::string mensagem)
 			//Envia requisição
 			//Aguarda retorno da mensagem com nome
 			//Monta o arquivo
-			sentCompleteData(GET, local+"/"+out[1]);
+			sentCompleteData(GET, out[1]);
 			std::string msg;
 			msg = getCommand(receiveMsg());
 			if(msg.compare(ERRO) != 0)
@@ -208,7 +188,7 @@ bool Client::comandoRequerido(std::string mensagem)
 				file.close();
 			//Envia mensagem com o dado e nome
 				std::cout<<"CLIENT: Envia mensagem de solicitacao de PUT.\n";
-				sentCompleteData(PUT, local+"/"+out[1]);
+				sentCompleteData(PUT, out[1]);
 				//sleep(0.5);
 				std::string msg;
 				msg = getCommand(receiveMsg());

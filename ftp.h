@@ -23,6 +23,7 @@
 #include <fstream> //Manipulação de arquivos
 #include <cstdlib> //system
 #include <fcntl.h> // open
+#include <stack>
  
 
 #include "word.h"
@@ -44,6 +45,8 @@ namespace connection
             bool sentData(bool more, std::string cmd, std::string msg);
 
         protected:
+            //Define local do servidor
+            std::vector<std::string> local;
             int sock=0;
             //Verifica se o diretorio é valido
             bool dirValid(std::string caminho);
@@ -82,6 +85,8 @@ namespace connection
             bool put(std::string file);
             //Imprime dados recebidos
             void printReceive();
+            //Retorna string de diretorios
+            std::string directory(std::vector<std::string > msg);
 
     };
 }
