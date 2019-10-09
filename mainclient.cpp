@@ -13,12 +13,13 @@ int main()
 {
 	std::cout << "Bem vindo ao serviço FTP versao 1!!!\n";
 
+	std::string mensagem;
+
     while(true)
     {
 		Client cliente(PORTCMT);
         //Usuario entra com o comando a executar
 		std::cout << "<semconexao>";
-		std::string mensagem;
 		std::getline(std::cin, mensagem);
 		std::vector<std::string > commands;
 		commands = cliente.tokenize(mensagem, ' ');
@@ -28,8 +29,12 @@ int main()
 			if(!cliente.connectServer(commands[1]))
 				{
 					std::cout << "Servidor indisponivel!!!!\n";
-					continue;
 				}
+			else
+			{
+				cliente.comunicacaoServer();
+			}
+			
 		}
 		else if(commands.size() > 0 && commands[0] == "quit")
 		{
@@ -39,10 +44,8 @@ int main()
 		else
 		{
 			std::cout << "Comando desconhecido!!!\n";
-			continue;
 		}
 
-		cliente.comunicacaoServer();
 		mensagem.clear();
 		
     }

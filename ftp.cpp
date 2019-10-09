@@ -263,6 +263,7 @@ bool Ftp::ls(std::string caminho = ".")
             return false;
         }
     struct dirent * dp;
+	v.push_back("Local atual: " + directory(local));
     while ((dp = readdir(dirp)) != NULL) {
         v.push_back(dp->d_name);
     }
