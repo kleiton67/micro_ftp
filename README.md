@@ -1,26 +1,57 @@
-# micro_ftp
-Construção de um programa simples de transferencia de arquivos
-ATENÇÃO: NÃO SEGUE PROTOCOLO FTP
+# Trabalho de Tópicos em Programção de redes
 
-# Arquivos globais
-Os arquivos globais são usados tanto para cliente quanto servidor, e esta relacionado ao padrão de comunicação
-São eles:
-	->structArg.h
-	->word.h
-	->ftp.h
+A aplicação foi versionada utilizando o GIT, no repositório remoto [github][repo]
+ on GitHub.
 
-# Server
-Para compilar: make -f makefile
+### Instalação
 
-## Arquivos
-Relacionado a conexão no servidor:
-	->server.h
+Essa aplicação requer um sistema Linux para ser compilada, seus pre-requisitos podem ser corrigidos com o seguinte comando;
 
-# Client
-Para compilar: make -f makeclient
-## Arquivos
-Relacionados a conexão com o cliente:
-	->client.h
+```sh
+$ sudo apt-get install build-essentials make
+```
 
-# Creditos
-Agradecimentos ao professor Marcos Paulo, alunos e amigos de turma, e também a um grande programador que me ajudou com varias duvidas https://github.com/mgnischor.
+### Development
+
+O maior contribuidor do repositorio, foi o desenvolvedor do projeto [Kleyton S. Leite] [kleyton], com varias dúvidas sanadas pelo professor da disciplina, e outras relacionadas ao C++, com um grande amigo, [Miguel Nischor][miguel].
+
+#### Building for source
+Para gerar a aplicação é necessário compilar o código. Esses executáveis estão na pasta bin.
+Para compilar é necessário alguns comandos:
+
+#### Cliente
+O cliente é responsável  por uma interface com o usuário e se conectar com o servidor. Para compilar:
+```sh
+$ make -f makeclient 
+```
+#### Servidor
+O servidor trata as operações solicitadas, porém não implementa nenhuma interface com o usuário. Para compilar:
+```sh
+$ make -f makeclient 
+```
+
+### Como usar?
+O servidor pode ser iniciado com o seguinte comando:
+```sh
+$ ./server.run
+```
+E o cliente:
+```sh
+$ ./client.run 
+```
+
+São implementado os comandos:
+* connect: Espera o ip do servidor como entrada;
+* ls: Solicita ao servidor a impressão de arquivos da pasta atual;
+* cd: Muda o servidor de diretório;
+* mkdir: Cria uma pasta no diretório atual do servidor;
+* get: Baixa um arquivo do repositório atual do servidor;
+* put: Envia um arquivo do cliente ao diretório atual do servidor;
+* quit: Fecha conexão com o servidor.
+
+
+
+   [repo]: <https://github.com/joemccann/dillinger>
+   [miguel]: <https://github.com/mgnischor>
+   [kleyton]: <https://github.com/kleiton67>
+
